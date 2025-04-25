@@ -11,18 +11,18 @@ export default function Navbar() {
                 </div>
             </Link>
             <div className="flex items-center">
-                <ul className="menu menu-horizontal p-0">
+                <ul className="text-lg menu menu-horizontal p-0">
                     <li>
                         <Link href="/dashboard">Dashboard</Link>
                     </li>
                     <li>
-                        <Link href="/transfer">Transfer</Link>
+                        <Link href="/transactions/transfer">Transfer</Link>
                     </li>
                     <li>
-                        <Link href="/topup">Topup</Link>
+                        <Link href="/transactions/topup">Topup</Link>
                     </li>
                     <li>
-                        <Link href="/payment">Payment</Link>
+                        <Link href="/transactions/payment">Payment</Link>
                     </li>
                     <li>
                         <Link href="/signout" className="text-error">
