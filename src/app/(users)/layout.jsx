@@ -1,19 +1,13 @@
 import Navbar from "@/components/Navbar";
-import Footer from "../_components/Footer";
 
-export default function DashboardLayout({ children }) {
+export default function UserLayout({ children }) {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
-            <div className="container mx-auto px-4 py-6 flex-grow">
-                {children}
-            </div>
-            <div className="divider"></div>
-            <div className="container mx-auto px-4">
-                <Footer />
-            </div>
-            <div className="py-4 text-center text-sm bg-base-200">
-                <p>Made by Bank Syariah Indonesia. All rights reserved.</p>
+            <div className="relative h-screen bg-base-200 flex justify-center items-center p-6 pt-22">
+                <div className="w-full max-w-md bg-base-100 p-6 rounded-xl shadow-md h-fit ">
+                    {children}
+                </div>
             </div>
         </div>
     );

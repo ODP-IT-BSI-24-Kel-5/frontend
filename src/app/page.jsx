@@ -1,4 +1,4 @@
-import DashboardLayout from "./(users)/layout";
+import DashboardLayout from "../components/DashboardLayout";
 import AccountsSection from "./_components/AccountsSection";
 import AppPromotion from "./_components/AppPromotion";
 import BalanceAndSpendingSection from "./_components/BalanceSpendingSection";
