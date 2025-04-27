@@ -55,7 +55,7 @@ export default function TopUpTab() {
   const [showBankDropdown, setShowBankDropdown] = useState(false);
   const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
   const selectedBank = bankMethods.find((bank) => bank.id === selectedBankId);
-  
+
 
   return (
     <>
