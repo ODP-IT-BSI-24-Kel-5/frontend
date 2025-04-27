@@ -13,7 +13,6 @@ export default function Home() {
             <div className="divider h-fit mt-0"></div>
             <AccountsSection />
             <ChartsSection />
-            <BalanceAndSpendingSection />
             <TransactionTable />
             <AppPromotion />
         </DashboardLayout>

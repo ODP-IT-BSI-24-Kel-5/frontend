@@ -1,81 +1,181 @@
+"use client";
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { fetchTransactions, fetchWallet } from "../api";
+import { formatCurrency } from "@/utils/FormatCurrency";
+import TransactionDetailModal from "./TransactionDetailModal";
+import EStatementModal from "./EStatementModal";
+import TablePagination from "./table/TablePagination";
+import TableRow from "./table/TableRow";
+import TableHeader from "./table/TableHeader";
+import TableFilters from "./table/TableFilters";
 
-  
-  // components/TransactionTable.jsx
-  export default function TransactionTable() {
+export default function TransactionTable() {
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [search, setSearch] = useState("");
+    const [totalPages, setTotalPages] = useState(0);
+    const [sort, setSort] = useState("createdAt");
+    const [direction, setDirection] = useState("desc");
+    const [meta, setMeta] = useState(null);
+    const [wallets, setWallets] = useState([]);
+    const [walletFilter, setWalletFilter] = useState("");
+    const [typeFilter, setTypeFilter] = useState("");
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+    const [isEStatementModalOpen, setIsEStatementModalOpen] = useState(false);
+    const handleShowDetails = (transaction) => {
+        setSelectedTransaction(transaction);
+    };
+
+    const fetchWallets = async () => {
+        try {
+            const token = Cookies.get("token");
+            var walletData = await fetchWallet(token);
+            setWallets(walletData.data.wallets);
+        } catch (error) {
+            console.error("Error fetching wallets:", error);
+        }
+    };
+    useEffect(() => {
+        fetchWallets();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const token = Cookies.get("token");
+            const data = await fetchTransactions(token, {
+                page: currentPage,
+                size: pageSize,
+                sort,
+                direction,
+                search: search || undefined,
+                sender_number: walletFilter || undefined,
+                type: typeFilter || undefined,
+            });
+            setTransactions(data.data);
+            setMeta(data.meta);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchWallets();
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [currentPage, pageSize, sort, direction, walletFilter, typeFilter, search]);
+
+    const handleSort = (column) => {
+        setDirection(sort === column ? (direction === "asc" ? "desc" : "asc") : "asc");
+        setSort(column);
+    };
+
     return (
-      <div className="overflow-x-auto">
-        <div className="flex justify-between mb-4">
-          <h2 className="text-xl font-bold">Transaction History</h2>
-          <div className="flex gap-2">
-            <div className="join">
-              <input type="text" placeholder="Type keyword Search" className="input input-bordered join-item" />
-              <button className="btn join-item">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </button>
+        <div className="card bg-base-100">
+            <div className="card-body p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h2 className="text-xl font-bold">Transaction History</h2>
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setIsEStatementModalOpen(true)}
+                    >
+                        Download E-Statement
+                    </button>
+                </div>
+
+                <TableFilters
+                    search={search}
+                    onSearchChange={setSearch}
+                    onSearchSubmit={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(1);
+                    }}
+                    walletFilter={walletFilter}
+                    onWalletFilterChange={(value) => {
+                        setWalletFilter(value);
+                        setCurrentPage(1);
+                    }}
+                    typeFilter={typeFilter}
+                    onTypeFilterChange={(value) => {
+                        setTypeFilter(value);
+                        setCurrentPage(1);
+                    }}
+                    wallets={wallets}
+                    onClearFilters={() => {
+                        setWalletFilter("");
+                        setTypeFilter("");
+                        setCurrentPage(1);
+                        fetchData();
+                    }}
+                />
+
+                <div className="overflow-x-auto">
+                    <table className="table table-zebra w-full">
+                        <thead>
+                            <TableHeader
+                                sort={sort}
+                                direction={direction}
+                                onSort={handleSort}
+                            />
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="12" className="text-center py-8">
+                                        <span className="loading loading-spinner loading-md"></span>
+                                    </td>
+                                </tr>
+                            ) : transactions.length === 0 ? (
+                                <tr>
+                                    <td colSpan="12" className="text-center py-8">
+                                        No transactions found
+                                    </td>
+                                </tr>
+                            ) : (
+                                transactions.map((transaction, index) => (
+                                    <TableRow
+                                        key={transaction.id}
+                                        transaction={transaction}
+                                        index={index}
+                                        currentPage={currentPage}
+                                        pageSize={pageSize}
+                                        onShowDetails={setSelectedTransaction}
+                                    />
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                <TablePagination
+                    meta={meta}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    pageSize={pageSize}
+                    onPageSizeChange={setPageSize}
+                />
+
+                {selectedTransaction && (
+                    <TransactionDetailModal
+                        transaction={selectedTransaction}
+                        isOpen={!!selectedTransaction}
+                        onClose={() => setSelectedTransaction(null)}
+                    />
+                )}
+
+                <EStatementModal
+                    isOpen={isEStatementModalOpen}
+                    onClose={() => setIsEStatementModalOpen(false)}
+                    wallets={wallets}
+                />
             </div>
-            <select className="select select-bordered">
-              <option>Date</option>
-            </select>
-            <select className="select select-bordered">
-              <option>Category</option>
-            </select>
-          </div>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>ID</th>
-                <th>No. Transaction</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Acquirer Account</th>
-                <th>Sender Account</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array(8).fill().map((_, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>12490</td>
-                  <td>00099999</td>
-                  <td>+1,000,000.00</td>
-                  <td>Topup</td>
-                  <td>Jan 1, 2024</td>
-                  <td>1099990</td>
-                  <td>00018146</td>
-                  <td>Bayar Mini Soccer</td>
-                  <td>
-                    <span className="badge badge-success">Success</span>
-                  </td>
-                  <td>
-                    <button className="btn btn-xs">Details</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="flex justify-between mt-4">
-          <button className="btn btn-outline">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-            </svg>
-            Download History Transaction
-          </button>
-          <select className="select select-bordered">
-            <option>10 Rows</option>
-          </select>
-        </div>
-      </div>
     );
-  }
+}

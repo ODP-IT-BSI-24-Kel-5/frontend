@@ -1,29 +1,103 @@
+"use client";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import { fetchProfile } from "@/app/api"; // Create this API function
 
-export default function WelcomeSection({ name, profileImage }) {
+export default function WelcomeSection() {
+    const [profile, setProfile] = useState({
+        full_name: "",
+        email: "",
+        mobile_phone: "",
+        image_url: null,
+        have_pin: false
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const firstName = profile.full_name?.split(' ')[0] || '';
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await fetchProfile();
+                setProfile(data.users);
+            } catch (error) {
+                setError("Failed to load profile");
+                console.error("Error loading profile:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProfile();
+    }, []);
+
+    if (loading) {
+        return <WelcomeSectionSkeleton />;
+    }
+
+    if (error) {
+        return <div className="alert alert-error shadow-lg">{error}</div>;
+    }
+
     return (
-        <div className="flex justify-between items-center py-6 pt-16">
-            <div>
-                <h1 className="text-3xl font-bold mb-1">Welcome, {name}</h1>
-                <p className="text-gray-600">
-                    Check all your incoming and outgoing transactions here
-                </p>
-            </div>
-            <div className="flex items-center gap-4">
-                <div>
-                    <h2 className="text-right font-bold">{name} Abdillah</h2>
-                    <button className="text-xs text-green-500 text-right block ml-auto">
-                        Edit Profile
-                    </button>
+        <div className="bg-base-100 pt-20">
+            <div className="">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+                    {/* Welcome Message Section */}
+                    <div className="text-center sm:text-left">
+                        <h1 className="text-2xl md:text-3xl font-bold">
+                            Welcome, {firstName}
+                        </h1>
+                        <p className="text-base-content/70 mt-2">
+                            Check all your incoming and outgoing transactions here
+                        </p>
+                    </div>
+
+                    {/* Profile Section */}
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <h2 className="font-bold">{profile.full_name}</h2>
+                            <button className="btn btn-link btn-sm text-primary p-0 hover:no-underline">
+                                Edit Profile
+                            </button>
+                        </div>
+                        <div className="avatar">
+                            <div className="w-12 h-12 rounded-full ring ring-primary ring-offset-2">
+                                <Image
+                                    src={profile.image_url || "/placeholder-avatar.png"}
+                                    alt="Profile"
+                                    width={48}
+                                    height={48}
+                                    className="object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="avatar">
-                    <div className="w-12 h-12 rounded-full ring ring-green-500 ring-offset-2">
-                        <Image
-                            src={profileImage || "/placeholder-avatar.jpg"}
-                            alt="Profile"
-                            width={48}
-                            height={48}
-                        />
+            </div>
+        </div>
+    );
+}
+
+function WelcomeSectionSkeleton() {
+    return (
+        <div className="card bg-base-100 shadow-lg animate-pulse">
+            <div className="card-body p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+                    <div className="w-full sm:w-2/3">
+                        <div className="h-8 bg-base-300 rounded w-48 mb-4"></div>
+                        <div className="h-4 bg-base-300 rounded w-full"></div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <div className="h-5 bg-base-300 rounded w-32 mb-2"></div>
+                            <div className="h-4 bg-base-300 rounded w-24"></div>
+                        </div>
+                        <div className="w-12 h-12 rounded-full bg-base-300"></div>
                     </div>
                 </div>
             </div>

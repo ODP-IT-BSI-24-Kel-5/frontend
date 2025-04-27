@@ -2,6 +2,7 @@
 import { ScanQrCode } from "lucide-react";
 import TopUpTab from "../_components/TopUpTab";
 import { useState } from "react";
+import ScanQrTab from "../_components/ScanQrTab";
 
 // Komponen utama dengan tab navigasi
 export default function TransactionsPage() {
@@ -32,7 +33,7 @@ export default function TransactionsPage() {
       {/* Tab Content */}
       <div>
         {activeTab === "topup" && <TopUpTab />}
-        {activeTab === "scanqr" && <ScanQrCode />}
+        {activeTab === "scanqr" && <ScanQrTab  />}
       </div>
     </div>
   );
