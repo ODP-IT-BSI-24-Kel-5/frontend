@@ -12,7 +12,7 @@ export const useAutoLogout = () => {
   useEffect(() => {
     const checkAuth = () => {
       const isValid = checkAuthStatus();
-      if (!isValid && !pathname.includes('/login')) {
+      if (!isValid && (!pathname.includes('/login') && !pathname.includes('/register'))) {
         router.push('/login');
       }
     };
