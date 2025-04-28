@@ -5,7 +5,14 @@ import Image from "next/image";
 import { ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
 
 export default function TopUpTab() {
+  // Untuk Form
+  // State untuk form
+  const [amount, setAmount] = useState("");
+  const [formattedAmount, setFormattedAmount] = useState("Rp. ");
   const [selectedAccountId, setSelectedAccountId] = useState("1");
+  const [note, setNote] = useState("");
+
+  // State untuk UI
   const [showBalance, setShowBalance] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
@@ -43,39 +50,60 @@ export default function TopUpTab() {
   ];
 
   const bankMethods = [
-    { id: "bri", name: "Bank BRI", image: "/bank-bri.png" },
-    { id: "bca", name: "Bank BCA", image: "/card-bca.png" },
-    { id: "bni", name: "Bank BNI", image: "/bank-bni.png" },
-    { id: "bsi", name: "Bank BSI", image: "/card-bsi.jpg" },
-    { id: "mandiri", name: "Bank Mandiri", image: "/bank-mandiri.png" },
+    { id: "bsi", name: "BSI Virtual Account", image: "/card-bsi.png" },
+    { id: "bri", name: "BRI Virtual Account", image: "/card-bri.png" },
+    { id: "bca", name: "BCA Virtual Account", image: "/card-bca.png" },
+    { id: "bni", name: "BNI Virtual Account", image: "/card-bni.png" },
+    { id: "mandiri", name: "Bank Mandiri", image: "/card-mandiri.png" },
   ];
 
-  const [activeTab, setActiveTab] = useState("topup");
+  // const [activeTab, setActiveTab] = useState("topup");
   const [selectedBankId, setSelectedBankId] = useState("");
   const [showBankDropdown, setShowBankDropdown] = useState(false);
   const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
   const selectedBank = bankMethods.find((bank) => bank.id === selectedBankId);
-  
+
+  // Validasi form
+  const isFormValid = Boolean(amount) && Boolean(selectedAccountId) && Boolean(selectedBankId);
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    if (value.startsWith("Rp. ")) {
+      const numericValue = value.slice(4).replace(/[^\d]/g, "");
+      setAmount(numericValue);
+      setFormattedAmount(`Rp. ${numericValue}`);
+    } else {
+      setFormattedAmount("Rp. ");
+      setAmount("");
+    }
+  };
 
   return (
-    <>
+    <div className="space-y-4">
       {/* Amount */}
       <div>
-        <label className="block mb-1 font-semibold">Amount</label>
-        <input
-          type="number"
-          placeholder="Rp."
-          className="w-full border border-gray-300 rounded-md p-3 text-black "
-        />
+        <label className="block mb-2 font-semibold">Amount</label>
+        <div className="relative">
+          <input
+            type="text"
+            value={formattedAmount}
+            onChange={handleAmountChange}
+            onFocus={(e) => {
+              const length = e.target.value.length;
+              e.target.setSelectionRange(length, length);
+            }}
+            className="w-full border border-gray-300 rounded-md p-3 text-black"
+            min="0"
+          />
+        </div>
       </div>
 
       {/* Choose Account */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Choose Accounts</label>
+      <div >
+        <label className="block mb-2 font-semibold">Choose Accounts</label>
         <div className="relative">
           <button
             onClick={() => setShowAccountDropdown(!showAccountDropdown)}
-            className="w-full flex justify-between items-center border border-gray-300 rounded-lg p-4 hover:shadow cursor-pointer"
+            className="w-full flex justify-between items-center border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-3">
               <Image
@@ -139,8 +167,8 @@ export default function TopUpTab() {
       </div>
 
       {/* Select Bank */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">From</label>
+      <div>
+        <label className="block mb-2 font-semibold">From</label>
         <div className="relative">
           <button
             onClick={() => setShowBankDropdown(!showBankDropdown)}
@@ -191,13 +219,28 @@ export default function TopUpTab() {
         <input
           type="text"
           placeholder="Add note"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
           className="w-full p-3 border border-gray-300 rounded-md text-black"
         />
       </div>
 
-      <button className="w-full p-3 bg-gray-300 text-white font-semibold rounded-md cursor-not-allowed">
+      <button
+        className={`w-full p-3 text-white font-semibold rounded-md transition-colors
+          ${isFormValid
+            ? 'bg-emerald-500 hover:bg-emerald-600'
+            : 'bg-gray-300 cursor-not-allowed'
+          }`}
+        disabled={!isFormValid}
+        onClick={() => {
+          if (isFormValid) {
+            // Handle top up logic
+            console.log('Top up:', { amount, selectedAccountId, selectedBankId, note });
+          }
+        }}
+      >
         Top Up
       </button>
-    </>
+    </div>
   );
 }
