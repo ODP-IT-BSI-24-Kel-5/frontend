@@ -1,40 +1,16 @@
-"use client";
-import { useState, useEffect } from "react";
+"use client"
+import { useEffect } from "react";
 import Image from "next/image";
-import Cookies from "js-cookie";
-import { fetchProfile } from "@/app/api"; // Create this API function
+import useProfileStore from "@/stores/profileStore";
 
 export default function WelcomeSection() {
-    const [profile, setProfile] = useState({
-        full_name: "",
-        email: "",
-        mobile_phone: "",
-        image_url: null,
-        have_pin: false
-    });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const firstName = profile.full_name?.split(' ')[0] || '';
+    const { profile, loading, error, fetchProfile } = useProfileStore();
+    console.log(profile)
+    const firstName = profile.full_name?.split(" ")[0] || "";
 
     useEffect(() => {
-        const loadProfile = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await fetchProfile();
-                setProfile(data.users);
-            } catch (error) {
-                setError("Failed to load profile");
-                console.error("Error loading profile:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadProfile();
+        fetchProfile();
     }, []);
-
     if (loading) {
         return <WelcomeSectionSkeleton />;
     }
@@ -50,10 +26,11 @@ export default function WelcomeSection() {
                     {/* Welcome Message Section */}
                     <div className="text-center sm:text-left">
                         <h1 className="text-2xl md:text-3xl font-bold">
-                            Welcome, {firstName}
+                            Assalamu'alaikum, {firstName}
                         </h1>
                         <p className="text-base-content/70 mt-2">
-                            Check all your incoming and outgoing transactions here
+                            Check all your incoming and outgoing transactions
+                            here
                         </p>
                     </div>
 
@@ -68,7 +45,10 @@ export default function WelcomeSection() {
                         <div className="avatar">
                             <div className="w-12 h-12 rounded-full ring ring-primary ring-offset-2">
                                 <Image
-                                    src={profile.image_url || "/placeholder-avatar.png"}
+                                    src={
+                                        profile.image_url ||
+                                        "/placeholder-avatar.png"
+                                    }
                                     alt="Profile"
                                     width={48}
                                     height={48}

@@ -32,9 +32,8 @@ export default function TransactionTable() {
 
     const fetchWallets = async () => {
         try {
-            const token = Cookies.get("token");
-            var walletData = await fetchWallet(token);
-            setWallets(walletData.data.wallets);
+            var walletData = await fetchWallet()
+            setWallets(walletData);
         } catch (error) {
             console.error("Error fetching wallets:", error);
         }
@@ -47,7 +46,7 @@ export default function TransactionTable() {
         try {
             setLoading(true);
             const token = Cookies.get("token");
-            const data = await fetchTransactions(token, {
+            const data = await fetchTransactions({
                 page: currentPage,
                 size: pageSize,
                 sort,

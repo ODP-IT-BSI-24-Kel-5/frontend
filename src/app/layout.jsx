@@ -20,9 +20,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={nunito.className}>
                 <ThemeProvider>
-                    {/* <AutoLogoutWrapper> */}
-                    {children}
-                    {/* </AutoLogoutWrapper> */}
+                    <AutoLogoutWrapper>{children}</AutoLogoutWrapper>
                 </ThemeProvider>
             </body>
         </html>

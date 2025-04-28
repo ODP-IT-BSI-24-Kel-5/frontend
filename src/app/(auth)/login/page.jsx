@@ -8,6 +8,7 @@ import { login } from "../api";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
+import useAuthStore from '@/stores/authStore';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -17,16 +18,15 @@ export default function LoginPage() {
     const [error, setError] = useState({});
     const [generalError, setGeneralError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const setToken = useAuthStore(state => state.setToken);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError({});
         setGeneralError("");
-
         try {
-            const data = await login(email, password);
-            Cookies.set("token", data.token, { expires: 7 });
+            await login(email, password);
             toast.success("Login successful!");
             router.push("/");
         } catch (err) {

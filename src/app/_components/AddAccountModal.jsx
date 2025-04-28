@@ -1,10 +1,16 @@
-import { useState } from 'react';
-import Cookies from 'js-cookie';
+import { useState } from "react";
+import Cookies from "js-cookie";
+import { createWallet } from "../api";
 
-export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCount }) {
+export default function AddAccountModal({
+    isOpen,
+    onClose,
+    onSuccess,
+    walletsCount,
+}) {
     const [formData, setFormData] = useState({
-        name: '',
-        main: false
+        name: "",
+        main: false,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -22,30 +28,12 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCou
         }
 
         try {
-            const token = Cookies.get('token');
-            const response = await fetch('http://localhost:8081/api/v1/users/wallets', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                if (data.error === "You have wallet with the same name!") {
-                    throw new Error("A wallet with this name already exists");
-                }
-                throw new Error(data.error || "Failed to create wallet");
-            }
-
+            await addWallet(formData);
             onSuccess();
             onClose();
-            setFormData({ name: '', main: false }); // Reset form
+            setFormData({ name: "", main: false }); // Reset form
         } catch (err) {
-            setError(err.message);
+            setError(err.error);
         } finally {
             setLoading(false);
         }
@@ -57,10 +45,12 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCou
         <dialog className="modal modal-open">
             <div className="modal-box">
                 <h3 className="font-bold text-lg mb-4">Create New Account</h3>
-                
+
                 {walletsCount >= 5 ? (
                     <div className="alert alert-warning mb-4">
-                        <span>You have reached the maximum limit of 5 wallets</span>
+                        <span>
+                            You have reached the maximum limit of 5 wallets
+                        </span>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit}>
@@ -72,7 +62,12 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCou
                                 type="text"
                                 className="input input-bordered w-full"
                                 value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        name: e.target.value,
+                                    })
+                                }
                                 required
                                 placeholder="Enter wallet name"
                             />
@@ -80,12 +75,19 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCou
 
                         <div className="form-control mb-6">
                             <label className="label cursor-pointer">
-                                <span className="label-text">Set as Main Account</span>
+                                <span className="label-text">
+                                    Set as Main Account
+                                </span>
                                 <input
                                     type="checkbox"
                                     className="checkbox"
                                     checked={formData.main}
-                                    onChange={(e) => setFormData({ ...formData, main: e.target.checked })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            main: e.target.checked,
+                                        })
+                                    }
                                 />
                             </label>
                         </div>
@@ -102,7 +104,7 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess, walletsCou
                                 className="btn btn-primary"
                                 disabled={loading}
                             >
-                                {loading ? 'Creating...' : 'Create Account'}
+                                {loading ? "Creating..." : "Create Account"}
                             </button>
                             <button
                                 type="button"

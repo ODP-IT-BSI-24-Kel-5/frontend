@@ -44,7 +44,7 @@ export default function AccountsSection() {
         const walk = (x - startX) * 2; // Adjust scroll speed
         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
     };
-    const bgColor = CHART_COLORS_TW[theme]
+    const bgColor = CHART_COLORS_TW[theme];
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -57,7 +57,7 @@ export default function AccountsSection() {
 
     const scroll = (direction) => {
         if (scrollContainerRef.current) {
-            const cardWidth = 360; // Card width (300) + gap (20)
+            const cardWidth = 360; 
             scrollContainerRef.current.scrollBy({
                 left: direction === "left" ? -cardWidth : cardWidth,
                 behavior: "smooth",
@@ -66,10 +66,9 @@ export default function AccountsSection() {
     };
 
     const fetchData = async () => {
-        const token = Cookies.get("token");
         try {
-            const data = await fetchWallet(token);
-            setAccounts(data.data.wallets);
+            const data = await fetchWallet();
+            setAccounts(data);
             setError(null);
         } catch (err) {
             setError("Failed to load wallet data");
@@ -92,27 +91,18 @@ export default function AccountsSection() {
         }
     }, [accounts]);
 
-    if (isLoading) {
-        return (
-            <div className="w-full animate-pulse">
-                <div className="h-8 bg-base-300 rounded w-48 mb-4"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3].map((i) => (
-                        <div
-                            key={i}
-                            className="h-40 bg-base-300 rounded-box"
-                        ></div>
-                    ))}
-                </div>
+    return isLoading ? (
+        <div className="w-full animate-pulse">
+            <div className="h-8 bg-base-300 rounded w-48 mb-4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-40 bg-base-300 rounded-box"></div>
+                ))}
             </div>
-        );
-    }
-
-    if (error) {
-        return <div className="alert alert-error">{error}</div>;
-    }
-
-    return (
+        </div>
+    ) : error ? (
+        <div className="alert alert-error">{error}</div>
+    ) : (
         <div className="w-full space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="space-y-2">

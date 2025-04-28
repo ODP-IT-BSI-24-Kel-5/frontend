@@ -3,6 +3,7 @@ import { Eye, EyeClosed, HandCoins } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { formatCurrency } from "@/utils/FormatCurrency";
+import { fetchTotBalance } from "../api";
 
 // components/BalanceAndSpendingSection.jsx
 export default function BalanceAndSpendingSection() {
@@ -14,23 +15,9 @@ export default function BalanceAndSpendingSection() {
         const fetchTotalBalance = async () => {
             try {
                 const token = Cookies.get("token");
-                const response = await fetch(
-                    "http://localhost:8081/api/v1/users/dashboard/chart/total-trans",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const data = await fetchTotBalance(token);
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch total balance");
-                }
-
-                const data = await response.json();
-                if (data.status === "success") {
-                    setTotalBalance(data.total_balance || 0);
-                }
+                setTotalBalance(data.total_balance || 0);
             } catch (error) {
                 console.error("Error fetching total balance:", error);
             } finally {

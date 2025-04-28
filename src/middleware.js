@@ -1,35 +1,33 @@
 // middleware.js
 import { NextResponse } from 'next/server'
+import useAuthStore from '@/stores/authStore';
+import Cookies from 'js-cookie';
 
 const PUBLIC_PATHS = ['/login', '/register']
 
 export function middleware(request) {
-  // const { pathname } = request.nextUrl
-  // const token = request.cookies.get('token')?.value
+  const { pathname } = request.nextUrl
 
-  // const isPublic = PUBLIC_PATHS.includes(pathname)
+  const token = request.cookies.get('token')?.value
+  const isPublic = PUBLIC_PATHS.includes(pathname)
 
-  // // If not logged in and trying to access a private route
-  // if (!token && !isPublic) {
-  //   return NextResponse.redirect(new URL('/login', request.url))
-  // }
+  if (isPublic && token) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
 
-  // // If logged in and trying to access public pages
-  // if (token && isPublic) {
-  //   return NextResponse.redirect(new URL('/dashboard', request.url))
-  // }
+  if (!isPublic && !token) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
 
-  // Proceed normally
   return NextResponse.next()
 }
-
 // middleware.js continued
-// export const config = {
-//   matcher: [
-//     '/',
-//     '/dashboard/:path*',
-//     '/profile/:path*',
-//     '/login',
-//     '/register'
-//   ],
-// }
+export const config = {
+  matcher: [
+    '/',
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/login',
+    '/register'
+  ],
+}

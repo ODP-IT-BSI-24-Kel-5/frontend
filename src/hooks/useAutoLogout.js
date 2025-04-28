@@ -1,37 +1,24 @@
 "use client"
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import useAuthStore from '@/stores/authStore';
 
 export const useAutoLogout = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const { checkAuthStatus } = useAuthStore();
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    if (!token) return;
+    const checkAuth = () => {
+      const isValid = checkAuthStatus();
+      if (!isValid && !pathname.includes('/login')) {
+        router.push('/login');
+      }
+    };
 
-    const payload = parseJwt(token);
-    const exp = payload?.exp;
+    checkAuth();
 
-    if (exp && Date.now() / 1000 > exp) {
-      Cookies.remove('token');
-      router.push('/login');
-    }
-  }, [router]);
+  }, [router, checkAuthStatus, pathname]);
 };
 
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
-}

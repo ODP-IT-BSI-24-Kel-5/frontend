@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }) {
                 {children}
             </div>
             <div className="divider"></div>
-            <div className="container mx-auto px-4">
+            <div className="px-0 mx-0 w-full">
                 <Footer />
             </div>
             <div className="py-4 text-center text-sm bg-base-200">

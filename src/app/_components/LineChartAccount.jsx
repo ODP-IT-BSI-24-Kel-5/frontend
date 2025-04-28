@@ -71,13 +71,12 @@ export default function KLineChartAccount() {
 
     // Data fetching and processing
     const fetchChartData = async (selectedPeriod, start, end) => {
-        const token = Cookies.get("token");
         try {
             let url = `period=${selectedPeriod ?? period}`;
             if (start && end) {
                 url += `&start_date=${start}&end_date=${end}`;
             }
-            const { data } = await fetchLineChart(token, url);
+            const { data } = await fetchLineChart(url);
             setLabels(data.stats.labels);
             processChartData(data.stats.datasets);
         } catch (error) {
