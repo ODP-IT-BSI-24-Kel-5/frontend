@@ -6,7 +6,7 @@ import ScanQrTab from "../_components/ScanQrTab";
 
 // Komponen utama dengan tab navigasi
 export default function TransactionsPage() {
-  const [activeTab, setActiveTab] = useState("topup");
+  const [activeTab, setActiveTab] = useState("TopUpTab");
 
   return (
     <div>
@@ -14,17 +14,17 @@ export default function TransactionsPage() {
       <div className="flex border-b mb-4">
         <button
           className={`flex-1 p-3 text-center ${
-            activeTab === "topup" ? "border-b-2 border-blue-500 font-bold" : ""
+            activeTab === "TopUpTab" ? "border-b-2 border-blue-500 font-bold" : ""
           }`}
-          onClick={() => setActiveTab("topup")}
+          onClick={() => setActiveTab("TopUpTab")}
         >
           Top Up
         </button>
         <button
           className={`flex-1 p-3 text-center ${
-            activeTab === "scanqr" ? "border-b-2 border-blue-500 font-bold" : ""
+            activeTab === "ScanQrTab" ? "border-b-2 border-blue-500 font-bold" : ""
           }`}
-          onClick={() => setActiveTab("scanqr")}
+          onClick={() => setActiveTab("ScanQrTab")}
         >
           Scan QR
         </button>
