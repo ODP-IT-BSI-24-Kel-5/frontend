@@ -3,7 +3,7 @@
 import "./globals.css";
 import { Nunito } from "next/font/google";
 import { ThemeProvider } from "@/theme-provider";
-// import { AutoLogoutWrapper } from "@/components/AutoLogoutWrapper";
+import { AutoLogoutWrapper } from "@/components/AutoLogoutWrapper";
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
             <body className={nunito.className}>
                 <ThemeProvider>
                     {/* <AutoLogoutWrapper> */}
-                        {children}
+                    {children}
                     {/* </AutoLogoutWrapper> */}
                 </ThemeProvider>
             </body>
