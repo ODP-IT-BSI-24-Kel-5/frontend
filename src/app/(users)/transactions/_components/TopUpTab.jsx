@@ -65,12 +65,17 @@ export default function TopUpTab() {
 
   // Validasi form
   const isFormValid = Boolean(amount) && Boolean(selectedAccountId) && Boolean(selectedBankId);
+  
   const handleAmountChange = (e) => {
     const value = e.target.value;
     if (value.startsWith("Rp. ")) {
+      // Remove non digit format
       const numericValue = value.slice(4).replace(/[^\d]/g, "");
       setAmount(numericValue);
-      setFormattedAmount(`Rp. ${numericValue}`);
+
+      // Thousand Separator
+      const formattedValue = new Intl.NumberFormat('id-ID').format(numericValue);
+      setFormattedAmount(`Rp. ${formattedValue}`);
     } else {
       setFormattedAmount("Rp. ");
       setAmount("");
@@ -91,7 +96,7 @@ export default function TopUpTab() {
               const length = e.target.value.length;
               e.target.setSelectionRange(length, length);
             }}
-            className="w-full border border-gray-300 rounded-md p-3 text-black"
+            className="w-full border border-gray-300 rounded-md p-3 text-black text-2xl"
             min="0"
           />
         </div>
