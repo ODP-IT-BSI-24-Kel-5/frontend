@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
 import { fetchQrData, fetchWallet } from "@/app/api";
 import toast, { Toaster } from "react-hot-toast";
+import { formatCurrency } from "@/utils/FormatCurrency";
 
 export default function ScanQrTab() {
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
@@ -49,7 +50,6 @@ export default function ScanQrTab() {
                 throw new Error("No QR data received from server");
             }
 
-
             // Create blob from the binary data
             const blob = new Blob([qrData.data], { type: "image/png" });
 
@@ -73,7 +73,7 @@ export default function ScanQrTab() {
     }, [qrImageUrl]);
 
     const selectedAccount = accounts.find(
-        (acc) => acc.id === selectedAccountId
+        (acc) => acc.number === selectedAccountId
     );
 
     return (
@@ -122,12 +122,23 @@ export default function ScanQrTab() {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-left">
-                                            {selectedAccount?.name ||
-                                                selectedAccountId}
+                                            {selectedAccount?.number}
                                         </p>
                                         {selectedAccount && (
-                                            <p className="text-sm text-gray-600">
-                                                {selectedAccount.number}
+                                            <p className="text-left text-sm text-gray-600">
+                                                <span className="font-semibold">
+                                                    {selectedAccount?.name ||
+                                                        recipients.find((r) =>
+                                                            r.name.includes(
+                                                                walletNumber
+                                                            )
+                                                        )?.name ||
+                                                        walletNumber}{" "}
+                                                </span>
+                                                -
+                                                {formatCurrency(
+                                                    selectedAccount.balance
+                                                )}
                                             </p>
                                         )}
                                     </div>
@@ -160,10 +171,13 @@ export default function ScanQrTab() {
                                     />
                                     <div>
                                         <p className="font-medium">
-                                            {account.name}
+                                            {account.number}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            {account.balance}
+                                            <span className="font-semibold">
+                                                {account?.name}{" "}
+                                            </span>{" "}
+                                            - {formatCurrency(account.balance)}
                                         </p>
                                     </div>
                                 </li>

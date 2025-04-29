@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronRight, Eye, EyeOff, Loader, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { DynamicIcon } from "lucide-react/dynamic";
 import TransferConfirmation from "../_components/TransferConfirmation";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -13,6 +14,7 @@ import {
     searchWallet,
     transferFunds,
 } from "@/app/api";
+import { formatCurrency } from "@/utils/FormatCurrency";
 
 export default function TransferInputPage() {
     const [showBalance, setShowBalance] = useState(false);
@@ -94,7 +96,6 @@ export default function TransferInputPage() {
             newErrors.account = "Please select an account";
         }
 
-        // Check balance
         if (
             selectedAccount &&
             parseInt(amount) > parseInt(selectedAccount.balance)
@@ -195,23 +196,6 @@ export default function TransferInputPage() {
             setIsSearching(false);
         }
     };
-
-    // const handleTransfer = () => {
-    //     setShowConfirmation(true);
-    // };
-
-    // const handleConfirmTransfer = () => {
-    //     // Add your actual transfer logic here
-    //     console.log({
-    //         recipient: walletNumber,
-    //         amount,
-    //         accountId: selectedAccountId,
-    //         note,
-    //     });
-    //     setShowConfirmation(false);
-    //     // Navigate to success page or show success message
-    // };
-
     return (
         <div className="space-y-4">
             <Toaster position="top-center" />
@@ -285,17 +269,22 @@ export default function TransferInputPage() {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-left">
-                                            {selectedRecipient?.name ||
-                                                recipients.find((r) =>
-                                                    r.name.includes(
-                                                        walletNumber
-                                                    )
-                                                )?.name ||
-                                                walletNumber}
+                                            {selectedRecipient.user_name ||
+                                                selectedRecipient.name}
                                         </p>
+                                        <p className="font-semibold text-left"></p>
                                         {selectedRecipient && (
                                             <p className="text-sm text-gray-600">
-                                                {selectedRecipient.number}
+                                                <span className="font-semibold">
+                                                    {selectedRecipient?.name ||
+                                                        recipients.find((r) =>
+                                                            r.name.includes(
+                                                                walletNumber
+                                                            )
+                                                        )?.name ||
+                                                        walletNumber}
+                                                </span>{" "}
+                                                - {selectedRecipient.number}
                                             </p>
                                         )}
                                     </div>
@@ -334,11 +323,15 @@ export default function TransferInputPage() {
                                         />
                                     </div>
                                     <div>
-                                        <p className="font-medium text-left">
-                                            {recipient.name}
+                                        <p className="font-semibold text-left">
+                                            {recipient.user_name ||
+                                                recipient.name}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            Recent Transfer
+                                            <span className="font-semibold">
+                                                {recipient.name}{" "}
+                                            </span>{" "}
+                                            - {recipient.number}
                                         </p>
                                     </div>
                                 </li>
@@ -394,17 +387,23 @@ export default function TransferInputPage() {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-left">
-                                            {selectedAccount?.name ||
-                                                recipients.find((r) =>
-                                                    r.name.includes(
-                                                        walletNumber
-                                                    )
-                                                )?.name ||
-                                                walletNumber}
+                                            {selectedAccount.number}
                                         </p>
                                         {selectedAccount && (
-                                            <p className="text-sm text-gray-600">
-                                                {selectedAccount.number}
+                                            <p className="text-left text-sm text-gray-600">
+                                                <span className="font-semibold">
+                                                    {selectedAccount?.name ||
+                                                        recipients.find((r) =>
+                                                            r.name.includes(
+                                                                walletNumber
+                                                            )
+                                                        )?.name ||
+                                                        walletNumber}{" "}
+                                                </span>
+                                                -
+                                                {formatCurrency(
+                                                    selectedAccount.balance
+                                                )}
                                             </p>
                                         )}
                                     </div>
@@ -440,11 +439,11 @@ export default function TransferInputPage() {
                                         className="rounded"
                                     />
                                     <div>
-                                        <p className="font-medium">
-                                            {account.name}
+                                        <p className="text-left font-medium">
+                                            {account.number}
                                         </p>
-                                        <p className="text-sm text-gray-600">
-                                            Rp{" "}
+                                        <p className="text-left text-sm text-gray-600">
+                                            {account.name} -Rp{" "}
                                             {new Intl.NumberFormat(
                                                 "id-ID"
                                             ).format(account.balance)}
@@ -471,9 +470,31 @@ export default function TransferInputPage() {
                         }
                         className="w-full flex justify-between items-center border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
                     >
-                        <span className="text-gray-400 font-medium">
-                            Select transaction category!
-                        </span>
+                        <div className="flex items-center gap-3">
+                            {selectedCategory ? (
+                                <>
+                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center">
+                                        <DynamicIcon
+                                            name={
+                                                selectedCategory.icon ||
+                                                "camera"
+                                            }
+                                            size={42}
+                                            className="text-primary"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-left">
+                                            {selectedCategory?.name}
+                                        </p>
+                                    </div>
+                                </>
+                            ) : (
+                                <span className="text-gray-400 font-medium">
+                                    Select category!
+                                </span>
+                            )}
+                        </div>
 
                         <ChevronRight className="w-5 h-5 text-gray-600" />
                     </button>
@@ -482,22 +503,17 @@ export default function TransferInputPage() {
                         <ul className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-2 max-h-64 overflow-auto">
                             {categories.map((category) => (
                                 <li
-                                    key={category.name}
+                                    key={category.id}
                                     onClick={() => {
-                                        setSelectedAccountId(category.name);
-                                        setShowAccountDropdown(false);
+                                        setSelectedCategoryId(category.id);
+                                        setShowCategoryDropdown(false);
                                     }}
                                     className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                                 >
-                                    <Image
-                                        src={
-                                            category.image ||
-                                            "/placeholder-avatar.png"
-                                        }
-                                        alt={category.name}
-                                        width={40}
-                                        height={40}
-                                        className="rounded"
+                                    <DynamicIcon
+                                        name={category.icon || "camera"}
+                                        size={42}
+                                        className="text-primary"
                                     />
                                     <div>
                                         <p className="font-medium">

@@ -8,6 +8,7 @@ import PinInputModal from "./PinInputModal";
 import toast, { Toaster } from "react-hot-toast";
 import TransferSuccess from "./TransferSuccess";
 import TransferFailed from "./TransferFailed";
+import { formatCurrency } from "@/utils/FormatCurrency";
 
 export default function TopUpTab() {
     // Untuk Form
@@ -19,6 +20,7 @@ export default function TopUpTab() {
     const [bankMethods, setBankMethods] = useState([]);
     const [note, setNote] = useState("");
     const [showPinModal, setShowPinModal] = useState(false);
+    const [showBalance, setShowBalance] = useState(false);
     const [pinError, setPinError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -85,7 +87,7 @@ export default function TopUpTab() {
 
             setTransactionResult({
                 ...data,
-                number : data.transaction_number,
+                number: data.transaction_number,
                 amount: transferData.amount,
                 sender_account: selectedAccount.number,
             });
@@ -124,7 +126,6 @@ export default function TopUpTab() {
 
         fetchData();
     }, []);
-
 
     // Validasi form
     const isFormValid =
@@ -226,17 +227,23 @@ export default function TopUpTab() {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-left">
-                                            {selectedAccount?.name ||
-                                                recipients.find((r) =>
-                                                    r.name.includes(
-                                                        walletNumber
-                                                    )
-                                                )?.name ||
-                                                walletNumber}
+                                            {selectedAccount.number}
                                         </p>
                                         {selectedAccount && (
-                                            <p className="text-sm text-gray-600">
-                                                {selectedAccount.number}
+                                            <p className="text-left text-sm text-gray-600">
+                                                <span className="font-semibold">
+                                                    {selectedAccount?.name ||
+                                                        recipients.find((r) =>
+                                                            r.name.includes(
+                                                                walletNumber
+                                                            )
+                                                        )?.name ||
+                                                        walletNumber}{" "}
+                                                </span>
+                                                -
+                                                {formatCurrency(
+                                                    selectedAccount.balance
+                                                )}
                                             </p>
                                         )}
                                     </div>
@@ -273,10 +280,13 @@ export default function TopUpTab() {
                                     />
                                     <div>
                                         <p className="font-medium">
-                                            {account.name}
+                                            {account.number}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            {account.balance}
+                                            <span className="font-semibold">
+                                                {account?.name}{" "}
+                                            </span>{" "}
+                                            - {formatCurrency(account.balance)}
                                         </p>
                                     </div>
                                 </li>
@@ -298,7 +308,7 @@ export default function TopUpTab() {
                             {selectedBank ? (
                                 <>
                                     <Image
-                                        src={selectedBank.image}
+                                        src={`/${selectedBank?.link}.png`}
                                         alt={selectedBank.name}
                                         width={50}
                                         height={50}
@@ -329,7 +339,7 @@ export default function TopUpTab() {
                                     className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                                 >
                                     <Image
-                                        src={bank.image}
+                                        src={`/${bank.link}.png`}
                                         alt={bank.name}
                                         width={40}
                                         height={40}
