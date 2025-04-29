@@ -7,7 +7,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { register } from "../api"; // Adjust this import if the function is different
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
-import Cookies from "js-cookie";
 
 export default function RegisterPage() {
     const router = useRouter();

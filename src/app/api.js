@@ -133,13 +133,21 @@ export const fetchTotBalance = async () => {
     return response.data;
 };
 
-import Cookies from "js-cookie";
 
 export async function fetchProfile() {
-    const token = Cookies.get("token");
-    const response = await api.get(`/profile`, {
+    const response = await api.get(`/profile`);
+
+    if (!(response.status === 200)) {
+        throw new Error("Failed to fetch profile");
+    }
+
+    return response.data.users;
+}
+
+export async function updateProfile(formData) {
+    const response = await api.put("/profile", formData, {
         headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
         },
     });
 
@@ -147,7 +155,7 @@ export async function fetchProfile() {
         throw new Error("Failed to fetch profile");
     }
 
-    return response;
+    return response.data.users;
 }
 
 // Create wallet

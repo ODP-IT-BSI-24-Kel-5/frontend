@@ -26,12 +26,12 @@ const useProfileStore = create(
                         set({ loading: true, error: null })
                         const response = await fetchProfile()
 
-                        if (!response?.data?.users) {
+                        if (!response) {
                             throw new Error('Invalid profile data')
                         }
 
                         set({
-                            profile: response.data.users,
+                            profile: response,
                             loading: false
                         })
                     } catch (error) {

@@ -53,7 +53,7 @@ export default function Navbar() {
                             Topup
                         </Link>
                     </li>
-                    <li>
+                    <li className="text-error">
                         <button onClick={() => logout()}>Sign Out</button>
                     </li>
                 </ul>

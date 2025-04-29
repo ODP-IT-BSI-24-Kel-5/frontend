@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import useProfileStore from "@/stores/profileStore";
+import Link from "next/link";
 
 export default function WelcomeSection() {
     const { profile, loading, error, fetchProfile } = useProfileStore();
@@ -37,9 +38,9 @@ export default function WelcomeSection() {
                     <div className="flex items-center gap-4">
                         <div className="text-right">
                             <h2 className="font-bold">{profile.full_name}</h2>
-                            <button className="btn btn-link btn-sm text-primary p-0 hover:no-underline">
+                            <Link href={"/user/profile"}  className="btn btn-link btn-sm text-primary p-0 hover:no-underline">
                                 Edit Profile
-                            </button>
+                            </Link>
                         </div>
                         <div className="avatar">
                             <div className="w-12 h-12 rounded-full ring ring-primary ring-offset-2">

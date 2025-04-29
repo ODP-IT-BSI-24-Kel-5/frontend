@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import Cookies from 'js-cookie'
-import { parseJwt } from '@/utils/ParseJwt'
 import { redirect } from 'next/navigation'
 
 
@@ -25,7 +24,7 @@ const useAuthStore = create(
       logout: () => {
         Cookies.remove('token')
         set({ token: null, isAuthenticated: false })
-        redirect('login')
+        redirect('/login')
       },
 
       checkAuthStatus: () => {
