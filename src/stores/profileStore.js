@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import { fetchProfile } from '@/app/api'
+import { createPin, fetchProfile } from '@/app/api'
 
 const initialState = {
     profile: {
@@ -19,19 +19,20 @@ const useProfileStore = create(
         persist(
             (set, get) => ({
                 ...initialState,
+                showPinModal: false,
 
                 fetchProfile: async () => {
                     try {
                         set({ loading: true, error: null })
                         const response = await fetchProfile()
-                        
+
                         if (!response?.data?.users) {
                             throw new Error('Invalid profile data')
                         }
 
-                        set({ 
-                            profile: response.data.users, 
-                            loading: false 
+                        set({
+                            profile: response.data.users,
+                            loading: false
                         })
                     } catch (error) {
                         console.error("Error loading profile:", error)
@@ -48,7 +49,22 @@ const useProfileStore = create(
                     set({ profile: { ...get().profile, ...newProfile } })
                 },
 
-                resetProfile: () => set(initialState)
+                resetProfile: () => set(initialState),
+
+                setShowPinModal: (show) => set({ showPinModal: show }),
+
+                createUserPin: async (pin, confirmationPin) => {
+                    try {
+                        await createPin({ pin, confirmation_pin: confirmationPin })
+                        set(state => ({
+                            profile: { ...state.profile, have_pin: true }
+                        }))
+                        return true
+                    } catch (error) {
+                        console.error("Error creating PIN:", error)
+                        throw error
+                    }
+                }
             }),
             {
                 name: 'profile-storage',

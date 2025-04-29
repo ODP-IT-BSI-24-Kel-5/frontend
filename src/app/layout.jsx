@@ -4,6 +4,7 @@ import "./globals.css";
 import { Nunito } from "next/font/google";
 import { ThemeProvider } from "@/theme-provider";
 import { AutoLogoutWrapper } from "@/components/AutoLogoutWrapper";
+import PinCheck from "./(auth)/_components/PinCheck";
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -20,7 +21,10 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={nunito.className}>
                 <ThemeProvider>
-                    <AutoLogoutWrapper>{children}</AutoLogoutWrapper>
+                    <AutoLogoutWrapper>
+                        <PinCheck />
+                        {children}
+                    </AutoLogoutWrapper>
                 </ThemeProvider>
             </body>
         </html>

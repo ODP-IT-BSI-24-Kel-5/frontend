@@ -1,101 +1,103 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
+import { fetchQrData, fetchWallet } from "@/app/api";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ScanQrTab() {
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
-    const [showBalance, setShowBalance] = useState(true);
-    const [selectedAccountId, setSelectedAccountId] = useState("1");
+    const [selectedAccountId, setSelectedAccountId] = useState();
+    const [accounts, setAccounts] = useState([]);
+    const [qrImageUrl, setQrImageUrl] = useState("");
 
-    const accounts = [
-        {
-            id: "1",
-            name: "Payment Account",
-            balance: "Rp. 10.000.000,00",
-            image: "/walletCards.png",
-        },
-        {
-            id: "2",
-            name: "Savings Account",
-            balance: "Rp. 5.000.000,00",
-            image: "/walletCards.png",
-        },
-        {
-            id: "3",
-            name: "Emergency Fund",
-            balance: "Rp. 2.000.000,00",
-            image: "/walletCards.png",
-        },
-        {
-            id: "4",
-            name: "Investment Account",
-            balance: "Rp. 15.000.000,00",
-            image: "/walletCards.png",
-        },
-        {
-            id: "5",
-            name: "Holiday Budget",
-            balance: "Rp. 1.500.000,00",
-            image: "/walletCards.png",
-        },
-    ];
-    const bankMethods = [
-        { id: "bsi", name: "BSI Virtual Account", image: "/card-bsi.png" },
-        { id: "bri", name: "BRI Virtual Account", image: "/card-bri.png" },
-        { id: "bca", name: "BCA Virtual Account", image: "/card-bca.png" },
-        { id: "bni", name: "BNI Virtual Account", image: "/card-bni.png" },
-        { id: "mandiri", name: "Bank Mandiri", image: "/card-mandiri.png" },
-    ];
+    const [isLoading, setIsLoading] = useState(false);
+    const [qrLoad, setQrLoad] = useState(false);
+    const [showQr, setShowQr] = useState(false);
 
-    // const [activeTab, setActiveTab] = useState("topup");
-    const [selectedBankId, setSelectedBankId] = useState("");
-    const [showBankDropdown, setShowBankDropdown] = useState(false);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const accountsData = await fetchWallet();
+
+                setAccounts(accountsData || []);
+
+                // Set first account as default if available
+                if (accountsData.length > 0) {
+                    setSelectedAccountId(accountsData[0].number);
+                }
+            } catch (error) {
+                toast.error("Failed to load data. Please refresh the page.");
+                console.error("Fetch error:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const handleShowQr = async () => {
+        setQrLoad(true);
+        try {
+            const qrData = await fetchQrData(selectedAccountId);
+            console.log("QR Data received:", qrData);
+
+            if (!qrData?.data) {
+                throw new Error("No QR data received from server");
+            }
+
+
+            // Create blob from the binary data
+            const blob = new Blob([qrData.data], { type: "image/png" });
+
+            // Create object URL from blob
+            const objectUrl = URL.createObjectURL(blob);
+            setQrImageUrl(objectUrl);
+            setShowQr(true);
+        } catch (error) {
+            console.error("Failed to generate QR:", error);
+            toast.error("Failed to generate QR code");
+        } finally {
+            setQrLoad(false);
+        }
+    };
+    useEffect(() => {
+        return () => {
+            if (qrImageUrl) {
+                URL.revokeObjectURL(qrImageUrl);
+            }
+        };
+    }, [qrImageUrl]);
+
     const selectedAccount = accounts.find(
         (acc) => acc.id === selectedAccountId
     );
-    const selectedBank = bankMethods.find((bank) => bank.id === selectedBankId);
-
-    // Validasi form
-    const isFormValid =
-        Boolean(amount) &&
-        Boolean(selectedAccountId) &&
-        Boolean(selectedBankId);
-    const handleAmountChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("Rp. ")) {
-            const numericValue = value.slice(4).replace(/[^\d]/g, "");
-            setAmount(numericValue);
-            setFormattedAmount(`Rp. ${numericValue}`);
-        } else {
-            setFormattedAmount("Rp. ");
-            setAmount("");
-        }
-    };
 
     return (
         <div className="space-y-4">
-            {/* Amount */}
-            <div>
-                <label className="block mb-2 font-semibold">Amount</label>
-                <div className="relative">
-                    <input
-                        type="text"
-                        value={formattedAmount}
-                        onChange={handleAmountChange}
-                        onFocus={(e) => {
-                            const length = e.target.value.length;
-                            e.target.setSelectionRange(length, length);
-                        }}
-                        className="w-full border border-gray-300 rounded-md p-3 text-black"
-                        min="0"
-                    />
-                </div>
-            </div>
-
+            <Toaster />
             {/* Choose Account */}
             <div>
+                {showQr && (
+                    <div className="flex justify-center">
+                        {qrLoad ? (
+                            <div className="w-64 h-64 flex items-center justify-center">
+                                <span className="loading loading-spinner loading-lg"></span>
+                            </div>
+                        ) : (
+                            <Image
+                                src={qrImageUrl}
+                                alt="QR Code"
+                                width={256}
+                                height={256}
+                                className="rounded-lg shadow-lg"
+                            />
+                        )}
+                    </div>
+                )}
                 <label className="block mb-2 font-semibold">
                     Choose Accounts
                 </label>
@@ -107,112 +109,50 @@ export default function ScanQrTab() {
                         className="w-full flex justify-between items-center border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
                     >
                         <div className="flex items-center gap-3">
-                            <Image
-                                src={selectedAccount.image}
-                                alt="Card"
-                                width={50}
-                                height={50}
-                                className="rounded"
-                            />
-                            <div>
-                                <p className="font-semibold">
-                                    {selectedAccount.name}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    {showBalance
-                                        ? selectedAccount.balance
-                                        : "••••••••••••••"}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation(); // biar gak toggle dropdown
-                                    setShowBalance(!showBalance);
-                                }}
-                            >
-                                {showBalance ? (
-                                    <Eye className="w-5 h-5 text-gray-600" />
-                                ) : (
-                                    <EyeOff className="w-5 h-5 text-gray-600" />
-                                )}
-                            </button>
-                            <ChevronRight className="w-5 h-5 text-gray-600" />
-                        </div>
-                    </button>
-                    <div>
-                        <label className="block mb-2 font-semibold">From</label>
-                        <div className="relative">
-                            <button
-                                onClick={() =>
-                                    setShowBankDropdown(!showBankDropdown)
-                                }
-                                className="w-full flex justify-between items-center border border-gray-300 rounded-lg p-4 hover:shadow cursor-pointer"
-                            >
-                                <div className="flex items-center gap-3">
-                                    {selectedBank ? (
-                                        <>
-                                            <Image
-                                                src={selectedBank.image}
-                                                alt={selectedBank.name}
-                                                width={50}
-                                                height={50}
-                                                className="rounded"
-                                            />
-                                            <span className="font-semibold">
-                                                {selectedBank.name}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <span className="text-gray-400 font-medium">
-                                            Choose Bank Transfer Method
-                                        </span>
-                                    )}
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-gray-600" />
-                            </button>
-
-                            {showBankDropdown && (
-                                <ul className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-2 max-h-64 overflow-auto">
-                                    {bankMethods.map((bank) => (
-                                        <li
-                                            key={bank.id}
-                                            onClick={() => {
-                                                setSelectedBankId(bank.id);
-                                                setShowBankDropdown(false);
-                                            }}
-                                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <Image
-                                                src={bank.image}
-                                                alt={bank.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded"
-                                            />
-                                            <span className="font-medium">
-                                                {bank.name}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                            {selectedAccount || selectedAccountId ? (
+                                <>
+                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center">
+                                        <Image
+                                            src="/profile.png"
+                                            alt="Profile"
+                                            width={42}
+                                            height={42}
+                                            className="w-full h-full rounded-lg"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-left">
+                                            {selectedAccount?.name ||
+                                                selectedAccountId}
+                                        </p>
+                                        {selectedAccount && (
+                                            <p className="text-sm text-gray-600">
+                                                {selectedAccount.number}
+                                            </p>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <span className="text-gray-400 font-medium">
+                                    Select from recent or search by number
+                                </span>
                             )}
                         </div>
-                    </div>
+                        <ChevronRight className="w-5 h-5 text-gray-600" />
+                    </button>
                     {showAccountDropdown && (
                         <ul className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-2 max-h-64 overflow-auto">
                             {accounts.map((account) => (
                                 <li
-                                    key={account.id}
+                                    key={account.number}
                                     onClick={() => {
-                                        setSelectedAccountId(account.id);
+                                        setSelectedAccountId(account.number);
                                         setShowAccountDropdown(false);
                                     }}
                                     className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                                 >
                                     <Image
-                                        src={account.image}
+                                        src={"/placeholder-avatar.png"}
                                         alt={account.name}
                                         width={40}
                                         height={40}
@@ -234,12 +174,15 @@ export default function ScanQrTab() {
             </div>
 
             <button
-                className="w-full bg-emerald-500 text-white py-3 rounded-lg font-medium hover:bg-emerald-600 transition-colors"
-                onClick={() => {
-                    /* Handle QR generation */
-                }}
+                className="w-full bg-emerald-500 text-white py-3 rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                onClick={handleShowQr}
+                // disabled={qrLoad || !selectedAccountId}
             >
-                Generate QR
+                {qrLoad ? (
+                    <span className="loading loading-spinner loading-sm mr-2"></span>
+                ) : (
+                    "Generate QR"
+                )}
             </button>
         </div>
     );

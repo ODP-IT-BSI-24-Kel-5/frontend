@@ -6,6 +6,7 @@ import { parseJwt } from '@/utils/ParseJwt'
 const useAuthStore = create(
   persist(
     (set, get) => ({
+      
       token: null,
       isAuthenticated: false,
 

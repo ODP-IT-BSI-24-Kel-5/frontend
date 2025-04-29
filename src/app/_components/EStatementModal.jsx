@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Cookies from 'js-cookie';
+import { getEstatement } from '../api';
+import toast from 'react-hot-toast';
 
 export default function EStatementModal({ isOpen, onClose, wallets }) {
     const [selectedMonth, setSelectedMonth] = useState('');
@@ -30,23 +32,16 @@ export default function EStatementModal({ isOpen, onClose, wallets }) {
     const handleDownload = async () => {
         try {
             setLoading(true);
-            const token = Cookies.get('token');
-            let url = `http://localhost:8081/api/v1/users/generate-wallet-statement?month=${selectedMonth}&year=${selectedYear}`;
+            let params = `?month=${selectedMonth}&year=${selectedYear}`;
             
             if (selectedWallet) {
-                url = `http://localhost:8081/api/v1/users/generate-wallet-statement/${selectedWallet}?month=${selectedMonth}&year=${selectedYear}`;
+                params = `/${selectedWallet}?month=${selectedMonth}&year=${selectedYear}`;
             }
 
-            const response = await fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await getEstatement(params)
+            if (!(response.status == 200)) throw new Error('Failed to download statement');
 
-            if (!response.ok) throw new Error('Failed to download statement');
-
-            const blob = await response.blob();
-            const downloadUrl = window.URL.createObjectURL(blob);
+            const downloadUrl = window.URL.createObjectURL(response.data);
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.download = `statement-${selectedYear}-${selectedMonth}${selectedWallet ? `-${selectedWallet}` : ''}.pdf`;
@@ -55,6 +50,7 @@ export default function EStatementModal({ isOpen, onClose, wallets }) {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(downloadUrl);
             onClose();
+            toast.success("Download E-Statement successful!");
         } catch (error) {
             console.error('Error downloading statement:', error);
         } finally {

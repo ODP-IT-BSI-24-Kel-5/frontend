@@ -28,7 +28,7 @@ export default function AddAccountModal({
         }
 
         try {
-            await addWallet(formData);
+            await createWallet(formData);
             onSuccess();
             onClose();
             setFormData({ name: "", main: false }); // Reset form

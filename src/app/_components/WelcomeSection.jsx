@@ -5,7 +5,6 @@ import useProfileStore from "@/stores/profileStore";
 
 export default function WelcomeSection() {
     const { profile, loading, error, fetchProfile } = useProfileStore();
-    console.log(profile)
     const firstName = profile.full_name?.split(" ")[0] || "";
 
     useEffect(() => {

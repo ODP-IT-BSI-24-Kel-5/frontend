@@ -35,10 +35,50 @@ export const fetchPieChartData = async () => {
 export const fetchWallet = async () => {
     try {
         const response = await api.get(`/wallets`);
+        console.log(response)
         if (response.status == "200") {
             return response.data.wallets;
         }
         throw new Error(response.data.message || "Failed to fetch data");
+    } catch (error) {
+        throw new Error(error.message || "Error fetching data");
+    }
+};
+export const fetchCategory = async () => {
+    try {
+        const response = await api.get(`/transactions/categories`);
+        console.log(response)
+        if (response.status == "200") {
+            return response.data.transaction_categories;
+        }
+        throw new Error(response.data.message || "Failed to fetch data");
+    } catch (error) {
+        throw new Error(error.message || "Error fetching data");
+    }
+};
+
+export const fetchQrData = async (number) => {
+    try {
+
+        const response = await api.get(`/wallets/${number}/qr`, {
+            responseType: 'arraybuffer'  // Important: handle binary data
+        });
+        if (response.status == "200") {
+            return response;
+        }
+        throw new Error(response.data.message || "Failed to fetch data");
+    } catch (error) {
+        throw new Error(error.message || "Error fetching data");
+    }
+};
+export const fetchMethod = async () => {
+    try {
+        const response = await api.get(`/transactions/methods`);
+        console.log(response)
+        if (response.status == "200") {
+            return response.data.transaction_top_up_methods;
+        }
+        throw new Error(response.data.message || "Failed to fetch transaction methods");
     } catch (error) {
         throw new Error(error.message || "Error fetching data");
     }
@@ -86,7 +126,7 @@ export const fetchTotBalance = async () => {
 
     const response = await api.get(`/dashboard/chart/total-trans`);
 
-    if (!(response.status == "200") ) {
+    if (!(response.status == "200")) {
         throw new Error('Failed to fetch transactions');
     }
 
@@ -117,6 +157,70 @@ export const createWallet = async (formData) => {
         return response;
     } catch (error) {
         throw error.response ? error.response.data : error.message;
+    }
+};
+export const getEstatement = async (params) => {
+    try {
+        const response = await api.get(`/generate-wallet-statement${params}`, {
+            responseType: 'blob', // Important for handling PDF files
+            headers: {
+                Accept: 'application/pdf',
+            }
+        });;
+        return response;
+    } catch (error) {
+        throw error.response ? error.response.data : error.message;
+    }
+};
+
+export const createPin = async (data) => {
+    try {
+        const response = await api.post('/auth/pins', data);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error.message;
+    }
+}
+
+export const fetchLatestRecipients = async () => {
+    try {
+        const response = await api.get('/wallets/latest');
+        if (response.status === 200) {
+            return response.data.wallets;
+        }
+        throw new Error(response.data.message || "Failed to fetch recipients");
+    } catch (error) {
+        throw new Error(error.message || "Error fetching recipients");
+    }
+};
+
+export const transferFunds = async (transferData) => {
+    try {
+        const response = await api.post('/transactions/transfer', transferData);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error.message;
+    }
+};
+
+export const topupFunds = async (topupData) => {
+    try {
+        const response = await api.post('/transactions/topup', topupData);
+        return response.data.transactions;
+    } catch (error) {
+        throw error.response ? error.response.data : error.message;
+    }
+};
+
+export const searchWallet = async (number) => {
+    try {
+        const response = await api.get(`/wallets/${number}`);
+        if (response.data.status === "success") {
+            return response.data.wallets;
+        }
+        throw new Error(response.data.message || "Wallet not found");
+    } catch (error) {
+        throw error.response?.data?.message || "Failed to find wallet";
     }
 };
 
