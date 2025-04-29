@@ -1,15 +1,16 @@
 "use client";
-import { useEffect, useState } from 'react';
-import useProfileStore from '@/stores/profileStore';
-import CreatePinModal from './CreatePinModal';
+import { useEffect, useState } from "react";
+import useProfileStore from "@/stores/profileStore";
+import CreatePinModal from "./CreatePinModal";
+import useAuthStore from "@/stores/authStore";
 
 export default function PinCheck() {
     const { profile, loading } = useProfileStore();
     const [showPinModal, setShowPinModal] = useState(false);
 
-    
     useEffect(() => {
-        if (!loading && profile && profile.have_pin === false) {
+        const token = useAuthStore.getState().getToken();
+        if (token && !loading && profile && !profile.have_pin == true) {
             setShowPinModal(true);
         } else {
             setShowPinModal(false);
@@ -17,9 +18,9 @@ export default function PinCheck() {
     }, [profile.have_pin, loading]);
 
     return (
-        <CreatePinModal 
-            isOpen={showPinModal} 
-            onClose={() => setShowPinModal(false)} 
+        <CreatePinModal
+            isOpen={showPinModal}
+            onClose={() => setShowPinModal(false)}
         />
     );
 }

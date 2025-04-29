@@ -4,9 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
 import { usePathname } from "next/navigation";
+import useAuthStore from "@/stores/authStore";
 
 export default function Navbar() {
     const pathname = usePathname();
+
+    const { logout } = useAuthStore();
 
     const isActiveRoute = (route) => {
         if (route === "/") {
@@ -30,10 +33,7 @@ export default function Navbar() {
             <div className="flex items-center">
                 <ul className="text-lg menu menu-horizontal p-0">
                     <li>
-                        <Link
-                            href="/"
-                            className={linkStyle("/")}
-                        >
+                        <Link href="/" className={linkStyle("/")}>
                             Dashboard
                         </Link>
                     </li>
@@ -54,9 +54,7 @@ export default function Navbar() {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/signout" className="text-error">
-                            Sign Out
-                        </Link>
+                        <button onClick={() => logout()}>Sign Out</button>
                     </li>
                 </ul>
                 <div className="divider divider-primary divider-horizontal py-2"></div>
