@@ -308,6 +308,7 @@ export default function TransferInputPage() {
                                     onClick={() => {
                                         handleRecipientSelect(recipient.number);
                                         setSelectedRecipient({
+                                            user_name: recipient.user_name,
                                             name: recipient.name,
                                             number: recipient.number,
                                         });
