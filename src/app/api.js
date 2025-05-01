@@ -1,7 +1,6 @@
 import useAuthStore from "@/stores/authStore";
 import axios from "axios";
 
-console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1/users';
 const api = axios.create({
     baseURL: BASE_URL,
@@ -35,7 +34,6 @@ export const fetchPieChartData = async () => {
 export const fetchWallet = async () => {
     try {
         const response = await api.get(`/wallets`);
-        console.log(response)
         if (response.status == "200") {
             return response.data.wallets;
         }
@@ -47,7 +45,6 @@ export const fetchWallet = async () => {
 export const fetchCategory = async () => {
     try {
         const response = await api.get(`/transactions/categories`);
-        console.log(response)
         if (response.status == "200") {
             return response.data.transaction_categories;
         }
@@ -74,7 +71,6 @@ export const fetchQrData = async (number) => {
 export const fetchMethod = async () => {
     try {
         const response = await api.get(`/transactions/methods`);
-        console.log(response)
         if (response.status == "200") {
             return response.data.transaction_top_up_methods;
         }
@@ -125,6 +121,17 @@ export const fetchTransactions = async (params = {}) => {
 export const fetchTotBalance = async () => {
 
     const response = await api.get(`/dashboard/chart/total-trans`);
+
+    if (!(response.status == "200")) {
+        throw new Error('Failed to fetch transactions');
+    }
+
+    return response.data;
+};
+
+
+export const fetchCategoriesData = async () => {
+    const response = await api.get(`/dashboard/chart/category`);
 
     if (!(response.status == "200")) {
         throw new Error('Failed to fetch transactions');

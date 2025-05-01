@@ -42,7 +42,7 @@ const formatDateForAPI = (date, isEndDate = false) => {
         : `${formattedDate}T00:00:00.000Z`;
 };
 
-export default function KLineChartAccount() {
+export default function LineChartAccount() {
     const initializeDatasets = (datasets) => {
         setAccounts(datasets);
         const selectedDataset = datasets.reduce((acc, item) => {
@@ -197,8 +197,8 @@ export default function KLineChartAccount() {
 
     // Render components
     return (
-        <div className="w-full card bg-base-100 shadow-md">
-            <div className="card-body w-full items-center">
+        <div className="w-full h-9/12 card bg-base-100 shadow-md">
+            <div className="card-body h-full w-full items-center">
                 {/* Period selector and date range */}
                 <div className="flex justify-between w-full mb-4">
                     <select

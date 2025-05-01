@@ -1,14 +1,18 @@
 import { Check } from "lucide-react";
 import { formatCurrency } from "@/utils/FormatCurrency";
 
-export default function TransactionDetailModal({ transaction, isOpen, onClose }) {
+export default function TransactionDetailModal({
+    transaction,
+    isOpen,
+    onClose,
+}) {
     const handlePrint = async () => {
         if (transaction?.image_receipt) {
             try {
                 const response = await fetch(transaction.image_receipt);
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
+                const link = document.createElement("a");
                 link.href = url;
                 link.download = `receipt-${transaction.transaction_number}.png`;
                 document.body.appendChild(link);
@@ -21,7 +25,8 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
         }
     };
 
-    var stringType = transaction.type.charAt(0) + transaction.type.slice(1).toLowerCase()
+    var stringType =
+        transaction.type.charAt(0) + transaction.type.slice(1).toLowerCase();
 
     if (!isOpen) return null;
 
@@ -32,7 +37,14 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
                     <div className="w-16 h-16 bg-success/20 rounded-full grid place-items-center">
                         <Check className="w-8 h-8 text-success" />
                     </div>
-                    <h2 className="text-2xl font-bold text-success">{stringType} Success</h2>
+                    <div className="text-center">
+                        <p className="text-2xl font-bold text-success">
+                            Alhamdulillah
+                        </p>
+                        <p className="text-2xl font-bold text-success">
+                            {stringType} Success
+                        </p>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -44,7 +56,9 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="text-base-content/70">Transaction Number</div>
+                        <div className="text-base-content/70">
+                            Transaction Number
+                        </div>
                         <div className="text-right font-mono">
                             {transaction.transaction_number}
                         </div>
@@ -53,7 +67,9 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-base-content/70">From</div>
                         <div className="text-right">
-                            <div className="font-bold">{transaction.wallet_name}</div>
+                            <div className="font-bold">
+                                {transaction.wallet_name}
+                            </div>
                             <div className="text-sm text-base-content/70">
                                 {transaction.wallet}
                             </div>
@@ -63,7 +79,9 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-base-content/70">To</div>
                         <div className="text-right">
-                            <div className="font-bold">{transaction.associate_name}</div>
+                            <div className="font-bold">
+                                {transaction.associate_name}
+                            </div>
                             <div className="text-sm text-base-content/70">
                                 {transaction.associate_wallet}
                             </div>
@@ -72,7 +90,9 @@ export default function TransactionDetailModal({ transaction, isOpen, onClose })
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-base-content/70">Description</div>
-                        <div className="text-right">{transaction.notes || '-'}</div>
+                        <div className="text-right">
+                            {transaction.notes || "-"}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

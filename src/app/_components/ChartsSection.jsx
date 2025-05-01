@@ -6,9 +6,9 @@ import PieChartAccount from "./PieChartAccount";
 
 export default function ChartsSection() {
     return (
-        <div className="flex relative flex-col lg:flex-row gap-6 my-8">
+        <div className="flex flex-col lg:flex-row gap-6 my-8 lg:min-h-[54rem] md:min-h-[30rem]">
             {/* Pie Chart - Full height to match line chart + balance section */}
-            <div className="w-full lg:w-2/5 lg:h-[calc(100vh-20rem)] lg:top-24">
+            <div className="w-full lg:w-2/5 lg:top-24">
                 <div className="h-full">
                     <PieChartAccount />
                 </div>

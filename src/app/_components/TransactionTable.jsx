@@ -16,7 +16,6 @@ export default function TransactionTable() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [search, setSearch] = useState("");
-    const [totalPages, setTotalPages] = useState(0);
     const [sort, setSort] = useState("createdAt");
     const [direction, setDirection] = useState("desc");
     const [meta, setMeta] = useState(null);
@@ -82,7 +81,7 @@ export default function TransactionTable() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <h2 className="text-xl font-bold">Transaction History</h2>
                     <button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm text-neutral-content "
                         onClick={() => setIsEStatementModalOpen(true)}
                     >
                         Download E-Statement

@@ -8,7 +8,7 @@ export default function CreatePinModal({ isOpen, onClose }) {
     const createUserPin = useProfileStore(state => state.createUserPin);
     const [pin, setPin] = useState(['', '', '', '', '', '']);
     const [confirmPin, setConfirmPin] = useState(['', '', '', '', '', '']);
-    const [step, setStep] = useState(1); // 1 for first PIN, 2 for confirmation
+    const [step, setStep] = useState(1); 
     const [showPin, setShowPin] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function CreatePinModal({ isOpen, onClose }) {
         newPin[index] = value;
         isPinConfirmation ? setConfirmPin(newPin) : setPin(newPin);
 
-        // Auto-focus next input
+
         if (value && index < 5) {
             const nextInput = document.getElementById(`${isPinConfirmation ? 'confirm-' : ''}pin-${index + 1}`);
             nextInput?.focus();

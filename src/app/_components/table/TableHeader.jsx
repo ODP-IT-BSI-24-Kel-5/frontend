@@ -23,12 +23,13 @@ export default function TableHeader({ sort, direction, onSort }) {
             <SortableHeader column="createdAt">Date</SortableHeader>
             <SortableHeader column="type">Type</SortableHeader>
             <SortableHeader column="wallet">Sender Account</SortableHeader>
-            <th>Acquirer Name</th>
+            <th>Sender Name</th>
             <SortableHeader column="associateWallet">
                 Acquirer Account
             </SortableHeader>
             <th>Sender Name</th>
             <th>Description</th>
+            <th>Category</th>
             <th>Notes</th>
             <th>Action</th>
         </tr>

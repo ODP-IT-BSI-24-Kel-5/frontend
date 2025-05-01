@@ -49,7 +49,6 @@ export default function TransferConfirmation({
                 setShowError(true);
                 return;
             }
-            console.log(result)
             setTransactionResult({
                 number: result.transactions.transaction_number, // transaction ID from API
                 amount: parseInt(transferData.amount.replace(/[^\d]/g, '')), // clean amount string

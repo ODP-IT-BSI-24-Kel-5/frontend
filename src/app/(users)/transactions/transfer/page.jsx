@@ -584,7 +584,6 @@ export default function TransferInputPage() {
                 onSuccess={() => {
                     setShowConfirmation(false);
                     resetForm();
-                    // Optional: navigate to success page or other actions
                 }}
             />
         </div>

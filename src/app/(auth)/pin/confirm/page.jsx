@@ -73,7 +73,7 @@ export default function ConfirmPINPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-            <KeyRound className="w-8 h-8 text-emerald-600" />
+            <KeyRound className="w-8 h-8 text-success" />
           </div>
           <h2 className="mt-6 text-2xl font-bold text-gray-900">
             Confirm Your PIN

@@ -110,7 +110,6 @@ export default function TopUpTab() {
                     fetchWallet(),
                 ]);
 
-                console.log(bankData);
                 setAccounts(accountsData || []);
                 setBankMethods(bankData || []);
 
@@ -164,7 +163,6 @@ export default function TopUpTab() {
                 transactionData={transactionResult}
                 onClose={() => {
                     setShowError(false);
-                    onClose();
                 }}
             />
         );
@@ -176,7 +174,6 @@ export default function TopUpTab() {
                 transactionData={transactionResult}
                 onClose={() => {
                     setShowSuccess(false);
-                    onClose();
                 }}
             />
         );
@@ -382,7 +379,7 @@ export default function TopUpTab() {
                         Processing...
                     </div>
                 ) : (
-                    "Transfer"
+                    "Topup"
                 )}
             </button>
 

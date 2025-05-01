@@ -101,7 +101,7 @@ export default function AccountCard({
                         </span> */}
                         {isMain && (
                             <div className="w-fit">
-                                <div className=" w-fit p-1 badge badge-primary">
+                                <div className="text-neutral-content  w-fit p-1 badge badge-primary">
                                     Main Wallet
                                 </div>
                             </div>

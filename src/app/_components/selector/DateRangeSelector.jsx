@@ -13,7 +13,7 @@ export default function DateRangeSelector({ startDate, endDate, onStartDateChang
                 onChange={(e) => onEndDateChange(e.target.value)}
                 className="input input-bordered"
             />
-            <button onClick={onApply} className="btn btn-primary">
+            <button onClick={onApply} className="text-neutral-content  btn btn-primary">
                 Apply
             </button>
         </div>

@@ -112,10 +112,10 @@ export default function AccountsSection() {
                     <h3 className="text-base-content/70">Dashboard</h3>
                 </div>
                 <button
-                    className="btn btn-primary w-full sm:w-auto"
+                    className="btn btn-primary w-full sm:w-auto text-neutral-content "
                     onClick={() => setIsAddModalOpen(true)}
                 >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="text-neutral-content h-5 w-5" />
                     Add Wallet
                 </button>
             </div>

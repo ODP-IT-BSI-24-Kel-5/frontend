@@ -34,7 +34,6 @@ export default function PieChartAccount() {
                 const data = await fetchPieChartData(token);
                 setLabels(data.data.stats.labels);
                 var datasets = data.data.stats.datasets;
-                console.log(datasets);
                 datasets = datasets.map((e) => {
                     e.backgroundColor = bgColor;
 
@@ -82,7 +81,7 @@ export default function PieChartAccount() {
     }
 
     return (
-        <div className="card w-full h-full  bg-base-100 shadow-md overflow-hidden">
+        <div className="card w-full h-full bg-base-100 shadow-md overflow-hidden">
             <div className="card-body h-full flex justify-between items-center w-full">
                 <div className="flex  w-full justify-between items-center mb-4">
                     <button

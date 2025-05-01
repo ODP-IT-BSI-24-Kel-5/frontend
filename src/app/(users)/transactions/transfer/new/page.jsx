@@ -12,7 +12,6 @@ export default function TransferInputPage() {
 
   const handleTransfer = () => {
     // Implementasi logic transfer
-    console.log("Transfer:", { walledNumber, amount, note });
   };
 
   return (

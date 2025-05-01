@@ -20,7 +20,7 @@ export default function WelcomeSection() {
     }
 
     return (
-        <div className="bg-base-100 pt-20">
+        <div className="bg-base-200 pt-20">
             <div className="">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
                     {/* Welcome Message Section */}

@@ -3,13 +3,17 @@ import { Eye, EyeClosed, HandCoins } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { formatCurrency } from "@/utils/FormatCurrency";
-import { fetchTotBalance } from "../api";
+import { fetchCategoriesData, fetchTotBalance } from "../api";
+import { DynamicIcon } from "lucide-react/dynamic";
+import SpendingCategoriesModal from "./SpendingCategoriesModal";
 
 // components/BalanceAndSpendingSection.jsx
 export default function BalanceAndSpendingSection() {
     const [showBalance, setShowBalance] = useState(false);
     const [totalBalance, setTotalBalance] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [categories, setCategories] = useState({});
+    const [showAllModal, setShowAllModal] = useState(false);
 
     useEffect(() => {
         const fetchTotalBalance = async () => {
@@ -25,11 +29,23 @@ export default function BalanceAndSpendingSection() {
             }
         };
 
+        const fetchCategories = async () => {
+            try {
+                const data = await fetchCategoriesData();
+                if (data.status === "success") {
+                    setCategories(data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories();
         fetchTotalBalance();
     }, []);
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div className="card bg-base-100 shadow-md">
+        <div className="grid h-4/12 grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card h-full bg-base-100 shadow-md">
                 <div className="card-body flex flex-col justify-between">
                     <div className="flex justify-between items-center">
                         <h2 className="font-bold">Total Balance</h2>
@@ -66,51 +82,58 @@ export default function BalanceAndSpendingSection() {
                     <div className="h-4"></div>
                 </div>
             </div>
-
             <div className="card bg-base-100 shadow-md">
                 <div className="card-body">
                     <div className="flex justify-between items-center">
                         <h2 className="font-bold">Top Spendings</h2>
-                        <button className="btn btn-ghost btn-xs">
+                        <button
+                            onClick={() => setShowAllModal(true)}
+                            className="btn btn-ghost btn-xs"
+                        >
                             VIEW ALL
                         </button>
                     </div>
 
-                    <div className="mt-4">
-                        <div className="flex justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full text-2xl bg-base-200 flex items-center justify-center">
-                                    🍔
+                    {Object.entries(categories)
+                        .sort((a, b) => b[1].amount - a[1].amount)
+                        .slice(0, 2)
+                        .map(([category, data]) => (
+                            <div key={category} className="mt-4">
+                                <div className="flex justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <DynamicIcon
+                                                height={30}
+                                                width={30}
+                                                name={data.icon || "camera"}
+                                                className=" text-primary"
+                                            />
+                                        </div>
+                                        <span>{category}</span>
+                                    </div>
+                                    <span className="font-bold">
+                                        {formatCurrency(data.amount)}
+                                    </span>
                                 </div>
-                                <span>Food</span>
+                                <progress
+                                    className="progress progress-primary w-full"
+                                    value={data.amount}
+                                    max={Math.max(
+                                        ...Object.values(categories).map(
+                                            (c) => c.amount
+                                        )
+                                    )}
+                                ></progress>
                             </div>
-                            <span className="font-bold">Rp 1.500.000,00</span>
-                        </div>
-                        <progress
-                            className="progress progress-primary w-full"
-                            value="60"
-                            max="100"
-                        ></progress>
-                    </div>
-
-                    <div className="mt-4">
-                        <div className="flex justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full text-2xl bg-base-200 flex items-center justify-center">
-                                    🚗
-                                </div>
-                                <span>Transport</span>
-                            </div>
-                            <span className="font-bold">Rp 1.000.000,00</span>
-                        </div>
-                        <progress
-                            className="progress progress-primary w-full"
-                            value="40"
-                            max="100"
-                        ></progress>
-                    </div>
+                        ))}
                 </div>
             </div>
+
+            <SpendingCategoriesModal
+                isOpen={showAllModal}
+                onClose={() => setShowAllModal(false)}
+                categories={categories}
+            />
         </div>
     );
 }

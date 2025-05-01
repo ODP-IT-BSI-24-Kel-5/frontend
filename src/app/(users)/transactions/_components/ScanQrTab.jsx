@@ -44,7 +44,6 @@ export default function ScanQrTab() {
         setQrLoad(true);
         try {
             const qrData = await fetchQrData(selectedAccountId);
-            console.log("QR Data received:", qrData);
 
             if (!qrData?.data) {
                 throw new Error("No QR data received from server");

@@ -9,7 +9,6 @@ export default function AddRecipientPage() {
 
   const handleSubmit = () => {
     // Add your logic to save the new recipient
-    console.log("New recipient wallet:", walletNumber);
     router.push("/transactions/transfer");
   };
 

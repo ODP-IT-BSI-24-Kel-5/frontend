@@ -1,4 +1,5 @@
 import { formatCurrency } from "@/utils/FormatCurrency";
+import { DynamicIcon } from "lucide-react/dynamic";
 
 export default function TableRow({
     transaction,
@@ -15,7 +16,7 @@ export default function TableRow({
             <td>{new Date(transaction.created_at).toLocaleDateString()}</td>
             <td>
                 <span
-                    className={`badge ${
+                    className={`badge text-neutral-content  ${
                         transaction.type === "TRANSFER"
                             ? "badge-primary"
                             : "badge-secondary"
@@ -29,10 +30,24 @@ export default function TableRow({
             <td>{transaction.associate_wallet}</td>
             <td>{transaction.associate_name}</td>
             <td>{transaction.description}</td>
+            <td className="text-primary">
+                {transaction.category_icon ? (
+                    <div className="flex flex-col items-center gap-1">
+                        <DynamicIcon
+                            height={20}
+                            width={20}
+                            name={transaction.category_icon}
+                        />
+                        <p>{transaction.category}</p>
+                    </div>
+                ) : (
+                    <p className="text-center">{transaction.category}</p>
+                )}
+            </td>
             <td>{transaction.notes}</td>
             <td>
                 <button
-                    className="btn btn-xs btn-ghost"
+                    className="btn btn-xs btn-accent text-neutral-content"
                     onClick={() => onShowDetails(transaction)}
                 >
                     Details

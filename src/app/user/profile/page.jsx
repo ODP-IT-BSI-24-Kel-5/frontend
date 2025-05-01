@@ -95,7 +95,7 @@ export default function ProfilePage() {
         <>
             <Toaster></Toaster>
             <Navbar />
-            <div className="flex items-center min-h-screen py-10">
+            <div className="flex items-center min-h-screen py-10 bg-base-200 ">
                 <div className="w-full h-fit my-auto md:w-3/4 lg:w-1/3 p-6 md:p-10 flex flex-col justify-center bg-base-100 rounded-lg mx-auto">
                     <h1 className="text-2xl font-semibold mb-6 text-primary">
                         Edit Profile
@@ -191,12 +191,12 @@ export default function ProfilePage() {
 
                         <button
                             type="submit"
-                            className="btn btn-primary w-full mt-6"
+                            className="btn btn-primary w-full mt-6 text-neutral-content"
                             disabled={isLoading}
                         >
                             {isLoading ? (
                                 <>
-                                    <span className="loading loading-spinner mr-2"></span>
+                                    <span className="text-neutral-content loading loading-spinner mr-2"></span>
                                     Updating...
                                 </>
                             ) : (
