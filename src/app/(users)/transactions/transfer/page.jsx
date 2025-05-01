@@ -120,6 +120,7 @@ export default function TransferInputPage() {
                 sender_account: selectedAccount.number,
                 acquirer_account: walletNumber,
                 amount: parseInt(amount),
+                category: parseInt(selectedCategoryId),
                 pin,
             };
 
